@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Lee Choo Yee">
+  <title>Gideon AI Summarizer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet" />
+  <link rel="shortcut icon" href="assets/images/chatgpt-favicon.png" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+
+<body>
+
+  <!-- START MAIN CONTAINER -->
+  <div class="container-fluid">
+    <div class="row">
+
+      <!-- START SIDENAV -->
+      <div class="side-nav col-lg-3 col-md-12">
+
+        <!-- START NEW CHAT BUTTON -->
+        <div class="row p-2">
+          <div class="chat-btn d-flex align-items-center cursor-pointer" id="new-chat">
+            <span class="d-block">+ New Chat</span>
+          </div>
+        </div>
+
+        <div class="row p-2">        
+          <label for="user-name" class="form-label">User Name</label>
+          <input type="text" class="form-control-lg text-light gpt-model" id="user-name" placeholder="name@example.com">
+        </div>        
+        
+        <hr />
+
+        <!-- START MODELS -->
+        <div class="row p-2">
+          <label for="gpt-model" class="form-label">Chat with Document</label>
+          <select name="doc-list" id="doc-list" class="form-select text-light gpt-model">
+            <option value="davinci">davinci</option>
+            <option value="curie">curie</option>
+            <option value="babbage">babbage</option>
+            <option value="ada">ada</option>
+            <option value="davinci-instruct-beta">davinci-instruct-beta</option>
+            <option value="curie-instruct-beta">curie-instruct-beta</option>
+            <option value="davinci-codex">davinci-codex</option>
+          </select>
+        </div>
+        
+        <hr/>
+        
+        <div class="row p-2">
+            <div class="col-12">
+                <input class="text-light gpt-model" name="fileInput" id="fileInput" type="file" accept="application/pdf">  
+               
+            </div>
+            <div class="d-grid gap-2">
+              <button id="btnUploadFile" type="button" class="btn btn-dark">Upload</button>       
+            </div>      
+        </div>
+
+        <hr />
+
+        <div class="row">
+          <div class="col-12">
+            <ul class="list-unstyled" id="chat-history">
+
+              <!-- START SETTINGS -->
+              <li class="nav-item">
+                <a class="nav-link text-white" href="#">
+                  <i class="fas fa-cog"></i> Settings
+                </a>
+              </li>
+
+              <!-- START GET HELP -->
+              <li class="nav-item">
+                <a class="nav-link text-white" href="#">
+                  <i class="fas fa-question-circle"></i> Get Help
+                </a>
+              </li>
+
+              <!-- START LOG OUT -->
+              <li class="nav-item">
+                <a class="nav-link text-white" href="#">
+                  <i class="fas fa-sign-out-alt"></i> Log Out
+                </a>
+              </li>
+
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- START CONTENT -->
+      <div class="content  p-0 pt-2 col-lg-9 col-md-12">
+        <div class="chat-content-area" id="chat-area">
+
+          <!-- START USER CHAT -->
+          <div class="row user-chat-box">
+            <div class="chat-icon">
+              <img class="chatgpt-icon" src="assets/images/user-icon.png" />
+            </div>
+            <div class="chat-txt">who are you?</div>
+          </div>
+
+          <!-- START GPT CHAT -->
+          <div class="row gpt-chat-box">
+            <div class="chat-icon">
+              <img class="chatgpt-icon" src="assets/images/chatgpt-icon.png" />
+            </div>
+            <div class="chat-txt">
+              I am ChatGPT, a large language model developed by OpenAI. I am
+              an artificial intelligence designed to process and generate
+              human-like text based on the input provided to me. I am here to
+              assist you with any questions or tasks you may have to the best
+              of my abilities!
+            </div>
+          </div>
+        </div>
+
+        <!-- START CHAT INPUTS -->
+        <div class="chat-input-area overflow-hidden">
+          <div class="row">
+            <div class="col-12 chat-inputs-area-inner">
+              <div class="row chat-inputs-container d-flex align-items-center">
+                <textarea name="user-prompt" id="user-prompt" class="col-11" placeholder="Send a message"></textarea>
+                 <!-- Upload icon with hidden input -->
+                  <span class="col-1 chat-btn d-flex align-items-center cursor-pointer" id="btnSend">                   
+                    <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                  </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- START FOOTER -->
+  <footer class="d-flex align-items-center justify-content-center position-relative bottom-0">
+    <div class="text-center">© 2024 Copyright ChooYee.Co</div>
+  </footer>
+
+  <!-- START EXTERNAL JS RESOURCES -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/material-ui/5.0.0-beta.5/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/material-ui/5.0.0-beta.5/index.js"></script>
+  <script src="https://unpkg.com/typeit@8.7.1/dist/index.umd.js"></script>
+  <script>
+    var anonuserid = "{{anonuserid}}";
+    var g_chatTopicId = "";
+    const config = {};
+    const docListSelect = document.getElementById('doc-list');
+    const userPromptTxt = document.getElementById('user-prompt');
+    const fileInput = document.getElementById('fileInput');
+    const sendMsgButton = document.getElementById('btnSend');
+    const chatAreaDiv = document.getElementById('chat-area');
+    const usernameTxt = document.getElementById('user-name');
+    const chatHistoryUl = document.getElementById('chat-history');
+    const newChatBtn = document.getElementById('new-chat');
+    const uploadButton = document.getElementById('btnUploadFile');
+
+    config.userImage = 'assets/images/user-icon.png';
+    config.gptImage = 'assets/images/chatgpt-icon.png';
+
+    //#Document Load
+    document.addEventListener('DOMContentLoaded', function () {
+      usernameTxt.value = anonuserid;
+      docListSelect.innerHTML ='';
+      chatAreaDiv.innerHTML = '';
+      getAllDocs();
+      generateChatTopicList();
+      chatAreaDiv.innerHTML = '<div class="relative inline-flex justify-center text-center text-2xl font-semibold leading-9"><h1>What can I help with?</h1><h1 class="result-streaming absolute left-full transition-opacity" style="opacity: 0;"><span></span></h1></div>'
+    })
+
+    //New Chat button clicked
+    newChatBtn.addEventListener('click', async(e)=>{
+      g_chatTopicId = '';
+      userPromptTxt.value = '';
+      chatAreaDiv.innerHTML = '<div class="relative inline-flex justify-center text-center text-2xl font-semibold leading-9"><h1>What can I help with?</h1><h1 class="result-streaming absolute left-full transition-opacity" style="opacity: 0;"><span></span></h1></div>'
+    })
+
+    //Chat button click
+    sendMsgButton.addEventListener('click', async (e)=>{
+      e.preventDefault();
+
+      const documentId = docListSelect.value;
+      const userPrompt = userPromptTxt.value;
+      
+      if (usernameTxt.value.trim()==='')
+      {
+        alert('Please enter you user name');
+        return;
+      }
+
+      userPromptTxt.value = '';
+      disableElement(sendMsgButton);
+
+      if (g_chatTopicId ==='')
+      {
+        newTopicResult = await CreateNewChatTopic(userPrompt)
+        g_chatTopicId = newTopicResult["id"]
+        chatHistoryUl.prepend(createChatTopicLink( newTopicResult["id"],  newTopicResult["topic"]));
+      }
+      chatAreaDiv.appendChild(createChatBox("user", userPrompt));
+      scrollToBottom();
+
+      formData = new FormData();
+      formData.append("documentid", documentId);
+      formData.append("chattopicid", g_chatTopicId);
+      formData.append("prompt",userPrompt);      
+      formData.append("username", usernameTxt.value);
+      fetch('/api/v1/chat', {
+        method: 'POST',
+        body: formData
+      })
+        .then(async response => 
+        {
+          if (!response.ok) {
+            // Throw an error if the response status is not OK
+            const errorMsg = await response.json();
+            throw new Error(`HTTP error! status: ${response.status} : ${JSON.stringify(errorMsg)}`);
+          }
+          return await response.json();
+        })          
+        .then(data => {          
+          console.log("Successfully get msg: ", data);
+          chatAreaDiv.appendChild(createChatBox("gpt", data));
+          scrollToBottom();
+          enableElement(sendMsgButton);
+        })
+        .catch(error => {
+          chatAreaDiv.appendChild(createChatBox("gpt", error));
+          console.error("Error get response:", error);
+          scrollToBottom();
+          enableElement(sendMsgButton);
+        });
+    })
+
+    //Upload button click
+    uploadButton.addEventListener('click', function(event) {
+      event.preventDefault();
+      const file = fileInput.files[0];     
+     
+      if (file) {        
+        uploadButton.setAttribute('disabled');
+        console.log("File selected:", file);
+        uploadFile(file); // Handle the file upload
+        uploadButton.setAttribute('disabled', false);
+        }
+    });
+  
+    //Generate Chat Topic List
+    generateChatTopicList=()=>{
+      chatHistoryUl.innerHTML = '';
+
+      fetch('api/v1/chat/topic', {
+        method: 'GET'
+      })
+        .then(async response => 
+        {
+          if (!response.ok) {
+            // Throw an error if the response status is not OK
+            const errorMsg = await response.json();
+            throw new Error(`HTTP error! status: ${response.status} : ${JSON.stringify(errorMsg)}`);
+          }
+          return await response.json();
+        })
+        .then(data => {          
+          data.forEach(e => {
+            chatHistoryUl.appendChild(createChatTopicLink(e.id, e.topic));
+          });
+          TopicNavEventHandler();
+          console.log("Get topic list successfully", data);
+        })
+        .catch(error => {
+          alertEl = createElement('div', {'class':'alert alert-danger','role':'alert'});
+          alertEl.innerHTML = error;
+          chatHistoryUl.appendChild(alertEl);
+          console.error("Error get generateChatHistoryList response:", error);
+        });
+    }
+
+    // Topic click event handler
+    TopicNavEventHandler=()=>{
+      topicLinks = document.getElementsByClassName('topic-nav');
+      Array.from(topicLinks).forEach(element => {
+          // Add click event listener to each element
+          console.log(element)
+          element.addEventListener('click', function(e) {
+            e.preventDefault();
+            //console.log(this.dataset.id);
+            g_chatTopicId = this.dataset.id; 
+            getChatHistory(this.dataset.id);
+          });
+      });
+    }
+
+    //Get chat history by topic
+    getChatHistory=(topicId)=>{
+      chatAreaDiv.innerHTML = '';
+      endpoint = `api/v1/chat/topic/${topicId}`;
+      fetch(endpoint, {
+        method: 'GET'
+      })
+        .then(async response => 
+        {
+          if (!response.ok) {
+            // Throw an error if the response status is not OK
+            const errorMsg = await response.json();
+            throw new Error(`HTTP error! status: ${response.status} : ${JSON.stringify(errorMsg)}`);
+          }
+          return await response.json();
+        })
+        .then(data => {          
+          data.forEach(e => {
+            chatAreaDiv.appendChild(createChatBox("user", e.user));
+            chatAreaDiv.appendChild(createChatBox("gpt", e.system));
+          });
+          console.log("Get chat history successfully", data);
+        })
+        .catch(error => {
+          alertEl = createElement('div', {'class':'alert alert-danger','role':'alert'});
+          alertEl.innerHTML = error;
+          chatHistoryUl.appendChild(alertEl);
+          console.error("Error get generateChatHistoryList response:", error);
+        });
+    }
+
+    //Get all documents 
+    function getAllDocs()
+    {
+      docListSelect.innerHTML = '';
+      docListSelect.add(new Option("Not chatting with document", "0"))
+      fetch('api/v1/docs', {
+        method: 'GET'
+      })
+        .then(response => response.json())
+        .then(data => {
+          data.forEach(e => {
+            docListSelect.add(new Option(e[1], e[0]))
+          });
+          
+          console.log("Get document list successfully", data);
+        })
+        .catch(error => {
+          console.error("Error get doc list:", error);
+        });
+    }
+
+    // Post file to API
+    function uploadFile(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+  
+      fetch('/api/v1/docs/upload', {
+        method: 'POST',
+        body: formData,
+      })
+        .then(response => response.json())
+        .then(data => {
+          getAllDocs();
+          uploadButton.setAttribute('disabled', false);
+          console.log("File uploaded successfully!", data);
+        })
+        .catch(error => {
+          uploadButton.setAttribute('disabled', false);
+          console.error("Error uploading file:", error);
+        });
+    }
+  
+    // Create new chat topic (summarize the user prompt to less than 6 words)
+    async function CreateNewChatTopic(userPrompt) {
+      try {
+        const formData = new FormData();
+        formData.append("sentence", userPrompt);
+
+        const response = await fetch('/api/v1/chat/topic/new', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errorMsg = await response.json();
+          throw new Error(`HTTP error! status: ${response.status} : ${JSON.stringify(errorMsg)}`);
+        }
+
+        const data = await response.json();
+        // Handle the successful response here
+        return data;
+
+      } catch (error) {
+        chatAreaDiv.appendChild(createChatBox("gpt", error));
+        console.error("Error get response:", error);
+        scrollToBottom();
+        throw error; // Rethrow the error if you need to handle it elsewhere
+      }
+    }
+
+    scrollToBottom = ()=>{
+      //chatAreaDiv.scrollTop = chatAreaDiv.scrollHeight;
+      chatAreaDiv.scrollTo({
+        top: chatAreaDiv.scrollHeight,
+        behavior: 'smooth'  // Enables smooth scrolling
+    });
+    }
+    
+    createChatBox=(chatType, text)=>
+    { 
+      htmlText = text;
+      if (typeof(text)=="string")  
+        htmlText = htmlText.replace(/\n/g, "<br>");
+    
+      chat = createElement('div', { "class": "chat-txt" });
+      chat.innerHTML = htmlText;
+
+      imgSrc = chatType=='user'? config.userImage: config.gptImage;
+      
+      img = createElement('img', {"class":"chatgpt-icon", "src":imgSrc, "ref":"img"});
+      chaticon = createElement('div', { "class": "chat-icon" });
+      chatbox = createElement('div', { "class": "row user-chat-box" });
+      chaticon.appendChild(img)
+      chatbox.appendChild(chaticon);
+      chatbox.appendChild(chat);
+      return chatbox;
+
+    }
+
+    createChatTopicLink=(id, topic)=>{
+
+      nav = createElement('li', {'class': 'nav-item'});
+      alink = createElement('a', {'class': 'nav-link text-white topic-nav', 'href': '#', 'data-id':id});
+      alink.innerHTML= topic;
+      nav.appendChild(alink);
+      return nav;
+      // <li class="nav-item">
+      //           <a class="nav-link text-white" href="#">
+      //             <i class="fas fa-cog"></i> Settings
+      //           </a>
+      //         </li>
+    } 
+
+    createElement=(elementType, attrs={}) =>
+    {
+      const el = document.createElement(elementType);
+      appendAttr(el, attrs);
+      return el;
+    }
+
+    appendAttr=(el, attrs = {})=>
+    {
+      for (const [k, v] of Object.entries(attrs)) {
+        el.setAttribute(k, v);
+      }
+      return el;
+    }
+  
+    disableElement=(ele)=>{
+      ele.classList.add('disabled');
+      setTimeout(() => {
+        ele.setAttribute('disabled');
+      }, 500);
+    }
+
+    enableElement=(ele)=>{
+      ele.classList.remove('disabled');
+      setTimeout(() => {
+        ele.setAttribute('disabled', false);
+      }, 500);
+    }
+  </script>
+
+</body>
+
+</html>
